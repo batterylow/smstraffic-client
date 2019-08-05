@@ -191,6 +191,25 @@ class Client
     }
 
     /**
+     * Get balance.
+     *
+     * @return stdClass
+     */
+    public function balance()
+    {
+        $payload = [
+            'operation' => 'account',
+        ];
+
+        $reply = $this->request($payload);
+
+        $response = new stdClass();
+        $response->account = (string) $reply->account;
+
+        return $response;
+    }
+
+    /**
      * Request HTTP API.
      *
      * @param array $payload Request body

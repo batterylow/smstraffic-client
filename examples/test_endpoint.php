@@ -11,6 +11,8 @@ if ('status' === $operation) {
        . '<error></error>'
        . '<sms_id>999999999999999999</sms_id>'
        . '</reply>';
+} elseif ('account' === $operation) {
+    echo '<?xml version="1.0"?><reply><account>99999</account></reply>';
 } else {
     echo '<?xml version="1.0"?><reply>'
        . '<result>OK</result>'

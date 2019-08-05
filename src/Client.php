@@ -162,6 +162,35 @@ class Client
     }
 
     /**
+     * Get message status.
+     *
+     * @param string $smsId Sms id
+     *
+     * @return stdClass
+     */
+    public function status(string $smsId)
+    {
+        $payload = [
+            'operation' => 'status',
+            'sms_id' => $smsId,
+        ];
+
+        $reply = $this->request($payload);
+
+        $response = new stdClass();
+        $response->submition_date = (string) $reply->submition_date;
+        $response->send_date = (string) $reply->send_date;
+        $response->last_status_change_date = (string) $reply->last_status_change_date;
+        $response->status = (string) $reply->status;
+        $response->error = (string) $reply->error;
+        $response->sms_id = (string) $reply->sms_id;
+
+        $response->result = empty($response->error) ? self::RESULT_OK : self::RESULT_ERROR;
+
+        return $response;
+    }
+
+    /**
      * Request HTTP API.
      *
      * @param array $payload Request body

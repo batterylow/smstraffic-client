@@ -49,12 +49,6 @@ class Client
      */
     private $password;
     /**
-     * Sender name.
-     *
-     * @var string
-     */
-    private $originator;
-    /**
      * HTTP API url.
      *
      * @var string
@@ -103,15 +97,13 @@ class Client
      *
      * @param string      $login       Login
      * @param string      $password    Password
-     * @param string      $sender      Sender
      * @param string|null $url         Url
      * @param string|null $failoverUrl Failover url
      */
-    public function __construct(string $login, string $password, string $sender, $url = null, $failoverUrl = null)
+    public function __construct(string $login, string $password, $url = null, $failoverUrl = null)
     {
         $this->login = $login;
         $this->password = $password;
-        $this->originator = $sender;
         $this->url = $url ?? self::URL;
         $this->failoverUrl = $failoverUrl ?? self::FAILOVER_URL;
     }
@@ -119,17 +111,18 @@ class Client
     /**
      * Send SMS.
      *
-     * @param string $phone   Receiver phone number
+     * @param string $from   Sender phone or name
+     * @param string $to   Receiver phone number
      * @param string $message Message
      * @param array  $options Options
      *
      * @return stdClass
      */
-    public function send(string $phone, string $message, array $options = [])
+    public function send(string $from, string $to, string $message, array $options = [])
     {
         $payload = [
-            'originator' => $this->originator,
-            'phones' => $phone,
+            'originator' => $from,
+            'phones' => $to,
             'message' => $message,
         ];
         foreach ($this->defaults as $name => $value) {

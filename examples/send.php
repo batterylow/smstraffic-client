@@ -15,10 +15,10 @@ $phone = '79999999999';
 // rand() prevent from ban while testing, see https://lk.smstraffic.ru/faq
 $message = "This is a test message.\n" . rand(1000, 9999);
 
-$client = new Client($login, $password, $originator, $testUrl);
+$client = new Client($login, $password, $testUrl);
 
 try {
-    $response = $client->send($phone, $message);
+    $response = $client->send($originator, $phone, $message);
 } catch (SmsTrafficException $e) {
     echo 'Send error: ' . $e->getMessage();
     exit(1);

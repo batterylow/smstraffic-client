@@ -9,9 +9,8 @@ $testUrl = 'http://localhost:8080/test_endpoint.php';
 
 $login = 'test_login';
 $password = 'test_passport';
-$originator = 'TESTSENDER';
 
-$client = new Client($login, $password, $originator, $testUrl);
+$client = new Client($login, $password, $testUrl);
 
 try {
     $response = $client->balance();

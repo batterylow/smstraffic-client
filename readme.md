@@ -2,4 +2,4 @@
 
 ## Usage
 
-See `examples/send.php`.
+See `examples/`.

@@ -4,9 +4,7 @@ namespace SmsTraffic;
 
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client as GuzzleClient;
-use SimpleXMLElement;
 use SmsTraffic\Exceptions\RequestException;
-use stdClass;
 
 /**
  * Client.
@@ -111,12 +109,12 @@ class Client
     /**
      * Send SMS.
      *
-     * @param string $from   Sender phone or name
-     * @param string $to   Receiver phone number
+     * @param string $from    Sender phone or name
+     * @param string $to      Receiver phone number
      * @param string $message Message
      * @param array  $options Options
      *
-     * @return stdClass
+     * @return \SmsTraffic\Response
      */
     public function send(string $from, string $to, string $message, array $options = [])
     {
@@ -134,24 +132,7 @@ class Client
             }
         }
 
-        $reply = $this->request($payload);
-
-        $response = new stdClass();
-        $response->result = (string) $reply->result;
-        $response->code = (string) $reply->code;
-        $response->description = (string) $reply->description;
-
-        if (isset($reply->message_infos)) {
-            $response->message_infos = [];
-            foreach ($reply->message_infos->message_info as $messageInfo) {
-                $info = new stdClass();
-                $info->phone = (string) $messageInfo->phone;
-                $info->sms_id = (string) $messageInfo->sms_id;
-                $response->message_infos[] = $info;
-            }
-        }
-
-        return $response;
+        return Response::send($this->request($payload));
     }
 
     /**
@@ -168,19 +149,7 @@ class Client
             'sms_id' => $smsId,
         ];
 
-        $reply = $this->request($payload);
-
-        $response = new stdClass();
-        $response->submition_date = (string) $reply->submition_date;
-        $response->send_date = (string) $reply->send_date;
-        $response->last_status_change_date = (string) $reply->last_status_change_date;
-        $response->status = (string) $reply->status;
-        $response->error = (string) $reply->error;
-        $response->sms_id = (string) $reply->sms_id;
-
-        $response->result = empty($response->error) ? self::RESULT_OK : self::RESULT_ERROR;
-
-        return $response;
+        return Response::status($this->request($payload));
     }
 
     /**
@@ -193,6 +162,8 @@ class Client
         $payload = [
             'operation' => 'account',
         ];
+
+        return Response::balance($this->request($payload));
 
         $reply = $this->request($payload);
 
@@ -207,7 +178,7 @@ class Client
      *
      * @param array $payload Request body
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return string
      *
      * @throws \SmsTraffic\RequestException Invalid request
      */
@@ -230,6 +201,6 @@ class Client
             throw new RequestException('Response code is ' . $response->getStatusCode());
         }
 
-        return new SimpleXMLElement($response->getBody()->getContents());
+        return $response->getBody()->getContents();
     }
 }

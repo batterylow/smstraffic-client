@@ -19,6 +19,6 @@ try {
     exit(1);
 }
 
-echo 'Balance: ' . $response->account . PHP_EOL;
+echo 'Balance: ' . $response->getContents()->account . PHP_EOL;
 
 exit(0);

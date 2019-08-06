@@ -1,9 +1,9 @@
 {
-    "name": "5818959/smstraffic",
+    "name": "5818959/smstraffic-client",
     "type": "library",
     "description": "A PHP wrapper for SMSTraffic's HTTP API",
     "keywords": ["smstraffic", "sms", "api"],
-    "homepage": "http://github.com/5818959/smstraffic",
+    "homepage": "http://github.com/5818959/smstraffic-client",
     "license": "MIT",
     "authors": [
         {

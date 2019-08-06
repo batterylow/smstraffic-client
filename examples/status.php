@@ -28,4 +28,6 @@ echo 'Status for message ' . $response->getContents()->sms_id . PHP_EOL
     . '  status: ' . $response->getContents()->status . PHP_EOL
     . '  error: ' . $response->getContents()->error . PHP_EOL;
 
+    echo (string) $response;
+
 exit(0);

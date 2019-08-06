@@ -21,4 +21,6 @@ try {
 
 echo 'Balance: ' . $response->getContents()->account . PHP_EOL;
 
+echo (string) $response;
+
 exit(0);

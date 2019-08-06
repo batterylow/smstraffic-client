@@ -5,6 +5,7 @@ namespace SmsTraffic;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client as GuzzleClient;
 use SmsTraffic\Exceptions\RequestException;
+use SmsTraffic\Messages\ResponseFactory;
 
 /**
  * Client.
@@ -132,7 +133,7 @@ class Client
             }
         }
 
-        return Response::send($this->request($payload));
+        return ResponseFactory::send($this->request($payload));
     }
 
     /**
@@ -140,7 +141,7 @@ class Client
      *
      * @param string $smsId Sms id
      *
-     * @return stdClass
+     * @return \stdClass
      */
     public function status(string $smsId)
     {
@@ -149,13 +150,13 @@ class Client
             'sms_id' => $smsId,
         ];
 
-        return Response::status($this->request($payload));
+        return ResponseFactory::status($this->request($payload));
     }
 
     /**
      * Get balance.
      *
-     * @return stdClass
+     * @return \stdClass
      */
     public function balance()
     {
@@ -163,14 +164,7 @@ class Client
             'operation' => 'account',
         ];
 
-        return Response::balance($this->request($payload));
-
-        $reply = $this->request($payload);
-
-        $response = new stdClass();
-        $response->account = (string) $reply->account;
-
-        return $response;
+        return ResponseFactory::balance($this->request($payload));
     }
 
     /**

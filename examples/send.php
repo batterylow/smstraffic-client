@@ -27,6 +27,8 @@ try {
 if (Client::RESULT_OK === $response->getContents()->result) {
     echo 'Sended.' . PHP_EOL
        . 'SMS id: ' . $response->getContents()->message_infos[0]->sms_id . PHP_EOL;
+
+    echo (string) $response;
 }
 
 exit(0);

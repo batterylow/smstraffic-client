@@ -6,6 +6,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client as GuzzleClient;
 use SmsTraffic\Exceptions\RequestException;
 use SmsTraffic\Messages\ResponseFactory;
+use SimpleXMLElement;
 
 /**
  * Client.
@@ -133,7 +134,9 @@ class Client
             }
         }
 
-        return ResponseFactory::send($this->request($payload));
+        $response = $this->request($payload);
+
+        return ResponseFactory::send($response['raw'], $response['source']);
     }
 
     /**
@@ -150,7 +153,9 @@ class Client
             'sms_id' => $smsId,
         ];
 
-        return ResponseFactory::status($this->request($payload));
+        $response = $this->request($payload);
+
+        return ResponseFactory::status($response['raw'], $response['source']);
     }
 
     /**
@@ -164,7 +169,9 @@ class Client
             'operation' => 'account',
         ];
 
-        return ResponseFactory::balance($this->request($payload));
+        $response = $this->request($payload);
+
+        return ResponseFactory::balance($response['raw'], $response['source']);
     }
 
     /**
@@ -172,29 +179,82 @@ class Client
      *
      * @param array $payload Request body
      *
-     * @return string
-     *
-     * @throws \SmsTraffic\RequestException Invalid request
+     * @return array
      */
     protected function request(array $payload)
     {
         $client = new GuzzleClient();
 
+        $params = [
+            'form_params' => array_merge([
+                'login' => $this->login,
+                'password' => $this->password,
+            ], $payload),
+        ];
+
+        $url = $this->url;
+        $response = $this->getResponse($client, $url, $params);
+
+        if (!$this->checkResult($response)) {
+            $url = $this->failoverUrl;
+            $response = $this->getResponse($client, $url, $params, true);
+        }
+
+        return [
+            'raw' => $response,
+            'source' => $url,
+        ];
+    }
+
+    /**
+     * Get response.
+     *
+     * @param GuzzleClient $client HTTP client
+     * @param string       $url    HTTP API url
+     * @param array        $params Request params
+     * @param boolean      $isLast Last request flag
+     *
+     * @throws RequestException Invalid request
+     */
+    private function getResponse(GuzzleClient $client, string $url, array $params, bool $isLast = null)
+    {
         try {
-            $response = $client->request('POST', $this->url, [
-                'form_params' => array_merge([
-                    'login' => $this->login,
-                    'password' => $this->password,
-                ], $payload),
-            ]);
+            $response = $client->request('POST', $url, $params);
         } catch (GuzzleException $e) {
-            throw new RequestException($e->getMessage());
+            if ($isLast) {
+                throw new RequestException($e->getMessage());
+            }
+
+            return null;
         }
 
         if (200 !== $response->getStatusCode()) {
-            throw new RequestException('Response code is ' . $response->getStatusCode());
+            if ($isLast) {
+                throw new RequestException('Response code is ' . $response->getStatusCode());
+            }
+
+            return null;
         }
 
         return $response->getBody()->getContents();
+    }
+
+    /**
+     * Check response result.
+     *
+     * @param string $xml Raw xml response
+     *
+     * @return boolean
+     */
+    private function checkResult(string $xml)
+    {
+        $response = new SimpleXMLElement($xml);
+
+        if (empty($response->result)) {
+            return false;
+        }
+        $result = (string) $response->result;
+
+        return self::RESULT_OK === $result;
     }
 }

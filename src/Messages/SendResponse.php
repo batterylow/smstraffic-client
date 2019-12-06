@@ -18,6 +18,7 @@ class SendResponse extends Response
             'result' => $this->contents->result,
             'code' => $this->contents->code,
             'description' => $this->contents->description,
+            'source' => $this->contents->source,
         ];
         if (isset($this->contents->message_infos)) {
             $data['message_infos'] = [];

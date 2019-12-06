@@ -3,6 +3,7 @@
     <file>./</file>
     
     <exclude-pattern>vendor/</exclude-pattern>
+    <exclude-pattern>examples/</exclude-pattern>
 
     <rule ref="PSR2"/>
 

@@ -195,7 +195,7 @@ class Client
         $url = $this->url;
         $response = $this->getResponse($client, $url, $params);
 
-        if (!$this->checkResult($response)) {
+        if (empty($response) || !$this->checkResult($response)) {
             $url = $this->failoverUrl;
             $response = $this->getResponse($client, $url, $params, true);
         }
